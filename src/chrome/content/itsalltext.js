@@ -529,8 +529,9 @@ http://developer.mozilla.org/en/docs/Code_snippets:Miscellaneous#Operating_syste
             doc = node.ownerDocument;
             cstyle = doc.defaultView.getComputedStyle(node, '');
             is_disabled = (
-                !(tag == 'textarea' ||
-                  tag == 'textbox') ||
+                !((tag == 'textarea' ||
+                   tag == 'textbox') && 
+                  node.getAttribute('role') != "textbox") ||
                   node.style.display == 'none' ||
                   (cstyle && (cstyle.display == 'none' ||
                               cstyle.visibility == 'hidden')) ||

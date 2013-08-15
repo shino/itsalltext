@@ -370,7 +370,13 @@ CacheObj.prototype.write = function (clobber) {
                           createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
                       conv.charset = itsalltext.getCharset();
 
-                      text = conv.ConvertFromUnicode(this.node.value);
+                      if (this.node.getAttribute("role") == "textbox") {
+                          text = this.node.innerHTML;
+                          text = conv.ConvertFromUnicode(this.node.innerHTML);
+                          text = text.replace(/<br\s*\/?>/ig, "\n");
+                      } else {
+                          text = conv.ConvertFromUnicode(this.node.value);
+                      }
                       foStream.write(text, text.length);
                       foStream.close();
 
@@ -622,6 +628,7 @@ CacheObj.prototype.update = function () {
         if (value !== null) {
             this.fade(20, 100);
             this.node.value = value;
+            this.node.innerHTML = value.replace(/\n/g,'<br/>');;
 
             var event = this.node.ownerDocument.createEvent("HTMLEvents");
             event.initEvent('change', true, false);
