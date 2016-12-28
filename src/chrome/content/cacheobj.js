@@ -371,9 +371,11 @@ CacheObj.prototype.write = function (clobber) {
                       conv.charset = itsalltext.getCharset();
 
                       if (this.node.getAttribute("role") == "textbox") {
-                          text = this.node.innerHTML;
                           text = conv.ConvertFromUnicode(this.node.innerHTML);
                           text = text.replace(/<br\s*\/?>/ig, "\n");
+                          text = text.replace(/&gt;/g, ">");
+                          text = text.replace(/&lt;/g, "<");
+                          text = text.replace(/&amp;/g, "&");
                       } else {
                           text = conv.ConvertFromUnicode(this.node.value);
                       }
@@ -619,7 +621,7 @@ CacheObj.prototype.fade = function (steps, delay) {
 
 /**
  * Update the node from the file.
- * @returns {boolean} Returns true ifthe file changed.
+ * @returns {boolean} Returns true if the file changed.
  */
 CacheObj.prototype.update = function () {
     var value;
@@ -627,8 +629,12 @@ CacheObj.prototype.update = function () {
         value = this.read();
         if (value !== null) {
             this.fade(20, 100);
-            this.node.value = value;
-            this.node.innerHTML = value.replace(/\n/g,'<br/>');;
+
+            if (this.node.getAttribute("role") == "textbox") {
+                this.node.innerHTML = value.replace(/\n/g,'<br/>');
+            } else {
+                this.node.value = value;
+            }
 
             var event = this.node.ownerDocument.createEvent("HTMLEvents");
             event.initEvent('change', true, false);
